@@ -24,6 +24,20 @@ export function useBirds() {
     };
     setBirds([...birds, birdWithId]); //append new bird to the existing birds array
   };
-// expose birds and addBird function to whoever uses the hook
-  return { birds, addBird };
+
+  //function to update
+  const updateBird = (id, updatedBird) => {
+    setBirds(birds.map(bird => 
+      bird.id === id ? { ...bird, ...updatedBird } : bird
+    ));
+  };
+  
+  //function to delete
+  const deleteBird = (id) => {
+    setBirds(birds.filter(bird => bird.id !== id));
+  };
+
+
+// expose birds and functions to whoever uses the hook
+  return { birds, addBird, updateBird, deleteBird };
 }

@@ -16,7 +16,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 
 
 function App() {
-  const { birds, addBird } = useBirds() //we call the hook which returns and object {birds, addBird}, so here we extract both values and now 'birds' and 'addBird' are available as variables in App.jsx's scope
+  const { birds, addBird, updateBird, deleteBird } = useBirds() //we call the hook which returns and object {birds, addBird...}, so here we extract both values and now 'birds' and 'addBird' are available as variables in App.jsx's scope
   const { getSightingsForBird, addSighting, toggleLike } = useSightings() 
 
   return (
@@ -39,7 +39,11 @@ function App() {
           path="/admin" 
           element={
             <ProtectedRoute requireAdmin={true}>
-              <Admin birds={birds} onAddBird={addBird} />
+              <Admin 
+              birds={birds} 
+              onAddBird={addBird} 
+              onUpdateBird={updateBird} 
+              onDeleteBird={deleteBird} />
             </ProtectedRoute>
           } 
         />

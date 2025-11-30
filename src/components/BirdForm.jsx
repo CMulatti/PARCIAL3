@@ -5,6 +5,7 @@ function BirdForm({ onAddBird }) {
   // at first, name and description are empty strings and image is null
   const [formData, setFormData] = useState({ 
     name: '',
+    scientificname: '',
     description: '',
     image: null
   });
@@ -16,6 +17,7 @@ function BirdForm({ onAddBird }) {
   //this will help us decide when to show our validation messages, as these depend on the interaction.
   const [touched, setTouched] = useState({
     name: false,
+    scientificname: false,
     description: false,
     image: false
   }); 
@@ -29,6 +31,7 @@ function BirdForm({ onAddBird }) {
   //we define all validation errors in one single object
   const errors = {
     name: formData.name.trim() === '' ? 'Por favor ingresa el nombre del ave.': /\d/.test(formData.name) ? 'El nombre del ave no puede contener números!' : '',
+    scientificname: formData.scientificname.trim() === '' ? 'Por favor ingresa el nombre científico del ave.': /\d/.test(formData.name) ? 'El nombre científico del ave no puede contener números!' : '',
     description: formData.description.trim() === '' ? 'Por favor ingresa la descripción!' : '',
     image: !imagePreview ? 'Por favor selecciona una imagen!' : ''
   };
@@ -88,9 +91,10 @@ function BirdForm({ onAddBird }) {
     setSubmitted(true); 
     
     // Check if all fields are valid
-    if (isValid('name') && isValid('description') && isValid('image')) {
+    if (isValid('name') && isValid('scientificname') && isValid('description') && isValid('image')) {
       const newBird = {
         name: formData.name.trim(),
+        scientificname: formData.scientificname.trim(),
         description: formData.description.trim(),
         image: imagePreview
       };
@@ -98,9 +102,9 @@ function BirdForm({ onAddBird }) {
       onAddBird(newBird); //here we send bird to parent component
 
       // Reset form
-      setFormData({ name: '', description: '', image: null });
+      setFormData({ name: '', scientificname: '',  description: '', image: null });
       setImagePreview(null);
-      setTouched({ name: false, description: false, image: false }); //Reset touched
+      setTouched({ name: false, scientificname: false, description: false, image: false }); //Reset touched
       setSubmitted(false); //Reset submitted
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
@@ -135,6 +139,30 @@ function BirdForm({ onAddBird }) {
           <div className="invalid-feedback d-block">{errors.name}</div>
         )}
       </div>
+
+      {/* Scientific name input*/}
+      <div className="mb-3">
+        <label htmlFor="sceintificname" className="form-label">Nombre Científico del ave:</label>
+        <input
+          type="text"
+          className={fieldClass('scientificname')} 
+          id="scientificname"
+          name="scientificname"
+          placeholder="Ingrese nombre científico del ave"
+          value={formData.scientificname}
+          onChange={handleInputChange}
+          onBlur={handleBlur} 
+          required
+        />
+        {/*if the field 'name' was touched OR the form was submitted, AND there's an error message for that field, then show the div with the error text*/}
+        {(touched.scientificname || submitted) && errors.scientificname && (
+          <div className="invalid-feedback d-block">{errors.scientificname}</div>
+        )}
+      </div>
+
+
+
+
 
       {/*Description textarea */}
       <div className="mb-3">

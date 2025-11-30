@@ -8,6 +8,7 @@ import Admin from './pages/Admin.jsx'
 import DatosCuriosos from './pages/DatosCuriosos.jsx'
 import SobreNosotros from './pages/SobreNosotros.jsx'
 import { useBirds } from './hooks/useBirds.js'
+import { useSightings } from './hooks/useSightings.js'
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Login from './components/Login.jsx'
@@ -15,7 +16,8 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 
 
 function App() {
-  const { birds, addBird } = useBirds()
+  const { birds, addBird } = useBirds() //we call the hook which returns and object {birds, addBird}, so here we extract both values and now 'birds' and 'addBird' are available as variables in App.jsx's scope
+  const { getSightingsForBird, addSighting, toggleLike } = useSightings() 
 
   return (
     <Router>
@@ -24,7 +26,10 @@ function App() {
         {/* PUBLIC ROUTES*/}
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home birds={birds} />} />
-        <Route path="/bird/:birdId" element={<Detail birds={birds} />} />
+        <Route path="/bird/:birdId" element={<Detail
+         birds={birds} getSightingsForBird={getSightingsForBird}
+         onAddSighting={addSighting}
+         onToggleLike={toggleLike} />} />
         <Route path="/sobre-nosotros" element={<SobreNosotros />}/>
         <Route path="/datos-curiosos" element={<DatosCuriosos />}/>
         

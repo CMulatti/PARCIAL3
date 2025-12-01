@@ -7,10 +7,9 @@ function BirdForm({ onAddBird, onUpdateBird, onDeleteBird, editingBird, onCancel
     name: '',
     scientificname: '',
     description: '',
-    image: null
+    image: ''
   });
 
-  const [imagePreview, setImagePreview] = useState(null);
 
   const [touched, setTouched] = useState({
     name: false,
@@ -30,12 +29,10 @@ function BirdForm({ onAddBird, onUpdateBird, onDeleteBird, editingBird, onCancel
         name: editingBird.name,
         scientificname: editingBird.scientificname,
         description: editingBird.description,
-        image: editingBird.image || null
+        image: editingBird.image || ''
       });
-      setImagePreview(editingBird.image || null);
     } else {
-      setFormData({ name: '', scientificname: '', description: '', image: null });
-      setImagePreview(null);
+      setFormData({ name: '', scientificname: '', description: '', image: '' });
     }
     setTouched({ name: false, scientificname: false, description: false, image: false });
     setSubmitted(false);
@@ -45,7 +42,7 @@ function BirdForm({ onAddBird, onUpdateBird, onDeleteBird, editingBird, onCancel
     name: formData.name.trim() === '' ? 'Por favor ingresa el nombre del ave.' : /\d/.test(formData.name) ? 'El nombre del ave no puede contener números!' : '',
     scientificname: formData.scientificname.trim() === '' ? 'Por favor ingresa el nombre científico del ave.' : /\d/.test(formData.scientificname) ? 'El nombre científico del ave no puede contener números!' : '',
     description: formData.description.trim() === '' ? 'Por favor ingresa la descripción!' : '',
-    image: !imagePreview ? 'Por favor selecciona una imagen!' : ''
+    image: !formData.image || formData.image.trim() === '' ? 'Por favor ingresa la URL de la imagen!' : '' 
   };
 
   //"A field is valid if there is no error message for it"
@@ -71,19 +68,7 @@ function BirdForm({ onAddBird, onUpdateBird, onDeleteBird, editingBird, onCancel
     setTouched(prev => ({ ...prev, [name]: true }));
   };
 
-  //when user selects and image, get the selected file, save it in the form data, use FileReader to read it as base64, once reading is done, display it.
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData(prev => ({ ...prev, image: file }));
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setImagePreview(event.target.result);
-        setTouched(prev => ({ ...prev, image: true }));  //mark image as touched
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+
 
   //when user submits form...
   const handleSubmit = (e) => {
@@ -95,7 +80,7 @@ function BirdForm({ onAddBird, onUpdateBird, onDeleteBird, editingBird, onCancel
         name: formData.name.trim(),
         scientificname: formData.scientificname.trim(),
         description: formData.description.trim(),
-        image: imagePreview
+        image: formData.image.trim() 
       };
 
       if (editingBird) {
@@ -105,8 +90,7 @@ function BirdForm({ onAddBird, onUpdateBird, onDeleteBird, editingBird, onCancel
         onAddBird(birdData);
       }
 
-      setFormData({ name: '', scientificname: '', description: '', image: null });
-      setImagePreview(null);
+      setFormData({ name: '', scientificname: '', description: '', image: '' });
       setTouched({ name: false, scientificname: false, description: false, image: false });
       setSubmitted(false);
       setSuccess(true);
@@ -186,27 +170,37 @@ function BirdForm({ onAddBird, onUpdateBird, onDeleteBird, editingBird, onCancel
         )}
       </div>
 
-      {/* Image */}
+
+      {/* Image URL input - CHANGED FROM FILE UPLOAD */}
       <div className="mb-3">
-        <label htmlFor="image" className="form-label">Imagen del ave:</label>
+        <label htmlFor="image" className="form-label">URL de la imagen:</label>
         <input
-          type="file"
+          type="url"
           className={fieldClass('image')}
           id="image"
-          accept="image/*"
-          onChange={handleImageChange}
+          name="image"
+          placeholder="https://ejemplo.com/imagen.jpg"
+          value={formData.image || ''}  // Changed: use empty string if null
+          onChange={handleInputChange}  // Changed:use text input handler
+          onBlur={handleBlur}
           required
         />
         {(touched.image || submitted) && errors.image && (
           <div className="invalid-feedback d-block">{errors.image}</div>
         )}
-        {imagePreview && (
+        <small className="text-muted">
+          Ingresa la URL completa de la imagen (ej: desde Wikimedia Commons)
+        </small>
+        
+        {/* Image preview */}
+        {formData.image && formData.image.startsWith('http') && (
           <div className="mt-3">
             <p className="text-muted">Vista previa:</p>
-            <img
-              src={imagePreview}
-              alt="Preview"
+            <img 
+              src={formData.image} 
+              alt="Preview" 
               style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: '5px' }}
+              onError={(e) => e.target.style.display = 'none'}
             />
           </div>
         )}

@@ -2,31 +2,42 @@ import { useState, useEffect } from 'react';
 
 const API_URL = 'http://localhost:8082/api/birds';
 
+// Helper to get headers with token
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  const headers = { 'Content-Type': 'application/json' };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  return headers;
+};
+
 export function useBirds() {
   const [birds, setBirds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Load birds from Spring backend on mount
+  // Load birds - NO TOKEN NEEDED (public)
   useEffect(() => {
     const fetchBirds = async () => {
       try {
         setLoading(true);
-        const response = await fetch(API_URL);
+        const response = await fetch(API_URL); // No auth needed for GET
         if (!response.ok) throw new Error('Failed to fetch birds');
         const data = await response.json();
         
-        // When FETCHING birds (GET) , Map birdId from backend to id for React components
         const mappedData = data.map(bird => ({
           ...bird,
-          id: bird.birdId // React components expect 'id', database has 'birdId'
+          id: bird.birdId
         }));
         
         setBirds(mappedData);
         setError(null);
       } catch (error) {
         console.error('Error fetching birds:', error);
-        setError('No se pudieron cargar las aves. Verifica que el servidor esté corriendo.');
+        setError('No se pudieron cargar las aves.');
       } finally {
         setLoading(false);
       }
@@ -35,45 +46,45 @@ export function useBirds() {
     fetchBirds();
   }, []);
 
-  // Add a new bird
+  // Add bird - TOKEN REQUIRED (admin only)
   const addBird = async (newBird) => {
     try {
-      // Prepare bird data for backend
       const birdData = {
         name: newBird.name,
-        scientificname: newBird.scientificname || 'Sin nombre científico', // Add default if missing
+        scientificname: newBird.scientificname,
         description: newBird.description,
-        image: newBird.image // This should be a URL, not base64
+        image: newBird.image
       };
 
       const response = await fetch(API_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(), // Includes token
         body: JSON.stringify(birdData)
       });
+      
+      if (response.status === 401 || response.status === 403) {
+        throw new Error('No tienes permiso para realizar esta acción');
+      }
       
       if (!response.ok) throw new Error('Failed to add bird');
       
       const savedBird = await response.json();
-      
-      // Map birdId to id for consistency
       const mappedBird = {
         ...savedBird,
         id: savedBird.birdId
       };
       
       setBirds([...birds, mappedBird]);
-      return mappedBird; // Return the saved bird
+      return mappedBird;
     } catch (error) {
       console.error('Error adding bird:', error);
-      throw error; // Re-throw so BirdForm can handle it
+      throw error;
     }
   };
 
-  // Update bird
+  // Update bird - TOKEN REQUIRED (admin only)
   const updateBird = async (id, updatedBird) => {
     try {
-      // Prepare bird data for backend
       const birdData = {
         name: updatedBird.name,
         scientificname: updatedBird.scientificname,
@@ -81,17 +92,19 @@ export function useBirds() {
         image: updatedBird.image
       };
 
-      const response = await fetch(`${API_URL}/${id}`, {  // ✅ FIXED: Added parentheses
+      const response = await fetch(`${API_URL}/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(), // Includes token
         body: JSON.stringify(birdData)
       });
+      
+      if (response.status === 401 || response.status === 403) {
+        throw new Error('No tienes permiso para realizar esta acción');
+      }
       
       if (!response.ok) throw new Error('Failed to update bird');
       
       const savedBird = await response.json();
-      
-      // Map birdId to id
       const mappedBird = {
         ...savedBird,
         id: savedBird.birdId
@@ -105,12 +118,17 @@ export function useBirds() {
     }
   };
 
-  // Delete bird
+  // Delete bird -TOKEN REQUIRED (admin only)
   const deleteBird = async (id) => {
     try {
-      const response = await fetch(`${API_URL}/${id}`, {  // ✅ FIXED: Added parentheses
-        method: 'DELETE'
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders() // Includes token
       });
+      
+      if (response.status === 401 || response.status === 403) {
+        throw new Error('No tienes permiso para realizar esta acción');
+      }
       
       if (!response.ok) throw new Error('Failed to delete bird');
       

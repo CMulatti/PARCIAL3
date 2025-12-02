@@ -3,13 +3,18 @@ import { Link, useNavigate } from 'react-router-dom'
 export default function NavBar() {
   const navigate = useNavigate()
   const isAuthenticated = localStorage.getItem('isAuthenticated')
+  const username = localStorage.getItem('username') 
   const userRole = localStorage.getItem('userRole')
-  
+
   const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated')
-    localStorage.removeItem('userRole')
-    navigate('/login')
-  }
+  localStorage.removeItem('token')  
+  localStorage.removeItem('username')  
+  localStorage.removeItem('isAuthenticated')
+  localStorage.removeItem('userRole')
+  navigate('/')  // Redirect to home
+}
+  
+
 
   return (
     <nav className="navbar navbar-expand-lg bg-black text-uppercase fixed-top" id="mainNav">
@@ -72,13 +77,14 @@ export default function NavBar() {
             </li>
             
             {/* Show Admin link ONLY to admins */}
-            {isAuthenticated && userRole === 'admin' && (
+            {isAuthenticated && userRole === 'ADMIN' && (
               <li className="nav-item mx-0 mx-lg-1">
                 <Link to="/admin" className="nav-link py-3 px-0 px-lg-3 rounded">
                   Admin
                 </Link>
               </li>
             )}
+
             
             {/*Login or Logout button */}
             {!isAuthenticated ? (

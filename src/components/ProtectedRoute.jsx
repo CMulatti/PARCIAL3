@@ -10,7 +10,7 @@ function ProtectedRoute({ children, requireAdmin = false }) {
   }
   
   // If route requires admin and user is not admin, redirect to homepage
-  if (requireAdmin && userRole !== "admin") {
+  if (requireAdmin && userRole !== "ADMIN") {
     return <Navigate to="/" replace />;
   }
   

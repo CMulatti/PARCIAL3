@@ -76,7 +76,7 @@ function BirdForm({ onAddBird, onUpdateBird, onDeleteBird, editingBird, onCancel
     setSubmitted(true);
 
     if (isValid('name') && isValid('scientificname') && isValid('description') && isValid('image')) {
-      const birdData = {
+      const birdData = {     //This is the new bird that will be send up
         name: formData.name.trim(),
         scientificname: formData.scientificname.trim(),
         description: formData.description.trim(),
@@ -87,7 +87,7 @@ function BirdForm({ onAddBird, onUpdateBird, onDeleteBird, editingBird, onCancel
         onUpdateBird(editingBird.id, birdData);
         onCancelEdit();
       } else {
-        onAddBird(birdData);
+        onAddBird(birdData); //Here we send the new bird up
       }
 
       setFormData({ name: '', scientificname: '', description: '', image: '' });

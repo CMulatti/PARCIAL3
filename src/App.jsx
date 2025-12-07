@@ -7,6 +7,8 @@ import Detail from './pages/Detail.jsx'
 import Admin from './pages/Admin.jsx'
 import DatosCuriosos from './pages/DatosCuriosos.jsx'
 import SobreNosotros from './pages/SobreNosotros.jsx'
+import Register from './pages/Register.jsx'
+import MyAccount from './pages/MyAccount.jsx'
 import { useBirds } from './hooks/useBirds.js'
 import { useSightings } from './hooks/useSightings.js'
 
@@ -25,6 +27,7 @@ function App() {
       <Routes>
         {/* PUBLIC ROUTES*/}
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} /> 
         <Route path="/" element={<Home birds={birds} />} />
         <Route path="/bird/:birdId" element={<Detail
          birds={birds} getSightingsForBird={getSightingsForBird}
@@ -34,6 +37,16 @@ function App() {
         <Route path="/datos-curiosos" element={<DatosCuriosos />}/>
         
         {/* PROTECTED ROUTES*/}
+        {/*My Account (only logged in regular users) */}
+        <Route 
+          path="/mi-cuenta" 
+          element={
+            <ProtectedRoute>
+              <MyAccount />
+            </ProtectedRoute>
+          } 
+        />
+
         {/*admin panel (admin only) */}
         <Route 
           path="/admin" 

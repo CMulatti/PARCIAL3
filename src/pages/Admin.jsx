@@ -1,4 +1,5 @@
 import BirdForm from '../components/BirdForm.jsx'
+import UserList from '../components/UserList.jsx'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 
@@ -42,13 +43,22 @@ function Admin({ birds, onAddBird, onUpdateBird, onDeleteBird }) {
               />
             </div>
           </div>
-          
+
+          {/*User Management Card */}
           <div className="card mb-4">
             <div className="card-body">
               <h2 className="card-title">Administrador de usuarios</h2>
-              <p className="text-muted">Próximamente...</p>
+              <UserList />
             </div>
           </div>
+
+          <div className="alert alert-info">
+            <i className="fas fa-info-circle me-2"></i>
+            <strong>Contraseñas protegidas:</strong> Por seguridad, las contraseñas no son visibles. 
+            Si un usuario olvida su contraseña, debe ser eliminado y registrarse nuevamente. Se implementará recuperación por email en el futuro.
+            </div>
+          
+
           
           <div className="card">
             <div className="card-body">
@@ -72,10 +82,10 @@ function Admin({ birds, onAddBird, onUpdateBird, onDeleteBird }) {
           </div>
           
           {/*ADMIN LIST OF CREATED BIRDS */}
-          {/*line 84: .map() loops through every bird in the array and returns a <button> element for each one. Each of these has:
+          {/*line 87: .map() loops through every bird in the array and returns a <button> element for each one. Each of these has:
           A unique key (lists need keys in React), A dynamic class to highlight the button, and a click handler which once clicked, 
           makes the bird become the editingBird in state.*/}
-          {/*"line 87: className should start with 'list-group-item list-group-item-action'
+          {/*"line 90: className should start with 'list-group-item list-group-item-action'
           then add 'active' to make it appear highlighted, but only if the clicked bird (editingBird) is the same as this list item from the .map()"*/}
           <div className="card">
             <div className="card-body">

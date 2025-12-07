@@ -85,19 +85,37 @@ export default function NavBar() {
               </li>
             )}
 
-            
-            {/*Login or Logout button */}
-            {!isAuthenticated ? (
+            {/* Show "Mi Cuenta" for logged-in users (not admin)*/}
+            {isAuthenticated && userRole === 'USER' && (
               <li className="nav-item mx-0 mx-lg-1">
-                <Link to="/login" className="nav-link py-3 px-0 px-lg-3 rounded">
-                  Ingresar
+                <Link to="/mi-cuenta" className="nav-link py-3 px-0 px-lg-3 rounded">
+                  Mi Cuenta
                 </Link>
               </li>
+            )}
+
+            
+            {/*Login, Register or Logout button */}
+            {!isAuthenticated ? (
+              <>
+                <li className="nav-item mx-0 mx-lg-1">
+                  <Link to="/login" className="nav-link py-3 px-0 px-lg-3 rounded">
+                    Ingresar
+                  </Link>
+                </li>
+                {/* Register Link */}
+                <li className="nav-item mx-0 mx-lg-1">
+                  <Link to="/register" className="nav-link py-3 px-0 px-lg-3 rounded">
+                    Registrarse
+                  </Link>
+                </li>
+              </>
             ) : (
               <li className="nav-item mx-0 mx-lg-1">
                 <button
-                  className="nav-link py-3 px-0 px-lg-3 rounded"
+                  className="nav-link py-3 px-0 px-lg-3 rounded btn btn-link"
                   onClick={handleLogout}
+                  style={{ border: 'none', background: 'none' }}
                 >
                   Cerrar Sesión
                 </button>
